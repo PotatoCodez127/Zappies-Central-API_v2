@@ -2,6 +2,43 @@
 
 This repository contains a production-ready, reusable template for building powerful, data-driven AI agents. It's designed for rapid development and deployment of customized bots for any client, using a Retrieval-Augmented Generation (RAG) architecture with a Knowledge Graph and Vector Store.
 
+## 🚀 Version 2: Key Improvements & Omnichannel Features
+
+This repository (`zappies-central-api_v2`) represents a major evolution from the original text-based chatbot template. It transforms the project into a comprehensive **Omnichannel API** capable of handling synchronous voice agents, SMS notifications, and automated background tasks.
+
+### 1. 🗣️ Voice Agent Integration
+The API now supports real-time, synchronous voice interactions (e.g., for Vapi or Bland AI) alongside the standard chat interface.
+-   **New Endpoints**:
+    -   `POST /get-availability`: Provides optimized, human-readable time slots specifically for voice synthesis (e.g., "10:00 AM" instead of raw ISO dates).
+    -   `POST /book-appointment`: Allows immediate, synchronous booking without requiring a confirmation link flow.
+    -   `POST /log-call`: Logs details of voice calls that didn't result in a meeting for analytics.
+-   **New Schemas**: Added `VoiceBookingRequest` and `CallLogRequest` to handle specific voice agent data structures.
+
+### 2. 📲 SMS Notifications & Reminders (Twilio)
+Integrated **Twilio** to reduce no-show rates through multi-channel communication.
+-   **Instant Confirmation**: Automatically sends an SMS confirmation ("Hi [Name], your call is confirmed for...") alongside the email invite when a booking occurs.
+-   **Automated Reminders**: A new notification system handles the entire reminder lifecycle:
+    -   **24-Hour Reminder**: Sent one day before the call.
+    -   **Morning-Of Reminder**: Sent at 8:00 AM on the day of the call.
+    -   **1-Hour Reminder**: Sent 60 minutes before the meeting starts.
+
+### 3. ⏰ Automated Scheduling & Cron Jobs
+The system now includes a dedicated scheduler to handle background tasks.
+-   **Scheduler Logic**: `tools/scheduler.py` actively scans the database for upcoming meetings and triggers the appropriate SMS reminders.
+-   **Cron Endpoint**: Added a secure `POST /tasks/send-reminders` endpoint. This allows external schedulers (like Railway Cron or Heroku Scheduler) to trigger the reminder script reliably without keeping the server awake 24/7.
+
+### 4. ⚙️ Advanced Business Logic & Cloud Deployment
+Refined configuration to support real-world business constraints and easier cloud deployment.
+-   **Cloud-Native Credentials**: Replaced file-based `service_account.json` with `GOOGLE_CREDENTIALS_STR` (Base64 encoded), allowing secure credential management via environment variables.
+-   **Strict Business Hours**: Added `VOICE_AGENT_CONFIG` settings to strictly enforce operating hours (e.g., 8 AM - 4 PM) and timezone handling (`Africa/Johannesburg`) across all booking tools.
+-   **Smart Disqualification**: The booking tool now automatically rejects leads below a defined `MINIMUM_BUDGET` (e.g., R8000), returning a polite disqualification message instead of booking the slot.
+
+### 5. 🛠️ Tech Stack Upgrades
+-   **Twilio**: For SMS infrastructure.
+-   **APScheduler**: For internal task scheduling logic.
+-   **Gunicorn**: Added for robust production server deployment.
+-   **LangChain Fixes**: Pinned specific versions to resolve AgentExecutor stability issues.
+
 ## ✨ Features
 
 -   **Dynamic RAG Architecture**: Combines a **Neo4j Knowledge Graph** for precise, factual queries (like rules and fees) and a **Supabase Vector Store** for general, contextual information retrieval.
