@@ -9,3 +9,4 @@ service_account.json
 .idea/
 tests/
 .env.test
+.venv3

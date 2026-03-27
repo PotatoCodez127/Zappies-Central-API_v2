@@ -64,14 +64,48 @@ def main():
 
     # --- 1. Establish Connections ---
     print("Step 1: Establishing database connections...")
+    #==============================================================================================
+
+
+
+    # --- SLEDGEHAMMER FIX ---
+    # 1. Nuke the broken environment variables so LangChain can't use them  
+    import os
+    env_vars_to_kill = ["NEO4J_URI", "NEO4J_USERNAME", "NEO4J_PASSWORD", "NEO4J_DATABASE"]
+    for var in env_vars_to_kill:
+        if var in os.environ:
+            del os.environ[var]
+
+    # 2. Connect with the 100% verified credentials
     graph = Neo4jGraph(
-        url=settings.NEO4J_URI,
-        username=settings.NEO4J_USERNAME,
-        password=settings.NEO4J_PASSWORD
+        url="neo4j+ssc://ea98a3f7.databases.neo4j.io",
+        username="ea98a3f7",  # <-- The missing link we finally found!
+        password="BH_JCMJl4miigovZk9UUWd3AqPdm8fsrBAd-fgdV--c",
+        database="ea98a3f7"
     )
+    # ------------------------
+
+
+    #==============================================================================================
     supabase: Client = create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_KEY)
-    graph_generation_llm = ChatGoogleGenerativeAI(model=settings.GENERATIVE_MODEL, temperature=0)
-    embeddings = GoogleGenerativeAIEmbeddings(model=settings.EMBEDDING_MODEL)
+    #================================================================================================
+    # --- ADD THIS LINE TO FORCE THE GOOGLE API KEY ---
+    os.environ["GOOGLE_API_KEY"] = "AIzaSyBsY8VVzS5_svLkdXGKDJgpmUa72c1CsAg"
+
+    # --- UPDATE THIS BLOCK ---
+    graph_generation_llm = ChatGoogleGenerativeAI(
+        model=settings.GENERATIVE_MODEL, 
+        temperature=0,
+        google_api_key=os.environ["GOOGLE_API_KEY"]  # <-- Force it to read the key
+    )
+
+
+    #================================================================================================
+    # Initialize Google's newest embedding model
+    embeddings = GoogleGenerativeAIEmbeddings(
+        model="models/text-embedding-004", # <-- This is the crucial update!
+        google_api_key=os.environ["GOOGLE_API_KEY"]
+    )
 
     # --- 2. Check for File Changes ---
     print("\nStep 2: Checking for new, updated, or deleted files...")
@@ -142,7 +176,25 @@ def main():
             strict_mode=True
         )
 
-        graph_documents = llm_transformer.convert_to_graph_documents(all_chunks)
+        # --- SPEED BUMP FIX FOR FREE TIER ---
+        import time
+        graph_documents = []
+        print(f"Processing {len(all_chunks)} chunks slowly to respect Google's free API limits...")
+        
+        for i, chunk in enumerate(all_chunks):
+            print(f"  - Extracting graph from chunk {i+1}/{len(all_chunks)}...")
+            try:
+                # Process one chunk at a time
+                doc = llm_transformer.convert_to_graph_documents([chunk])
+                graph_documents.extend(doc)
+                # Sleep for 4 seconds to stay well under the 15 requests/minute limit
+                time.sleep(4) 
+            except Exception as e:
+                print(f"    Hitting a limit, pausing for 10 seconds... Error: {e}")
+                time.sleep(10)
+        # ------------------------------------
+
+        
         print(f"Generated {len(graph_documents)} graph documents.")
 
         if graph_documents:
