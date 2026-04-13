@@ -33,3 +33,5 @@ google-auth-oauthlib
 
 unstructured
 markdown
+langchain-huggingface
+sentence-transformers

@@ -6,6 +6,7 @@ import uuid
 import json 
 
 # LangChain Imports FORCE REDEPLOY
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain.agents import AgentExecutor, create_react_agent
 from langchain.prompts import PromptTemplate
 from langchain_community.vectorstores import SupabaseVectorStore
@@ -71,9 +72,10 @@ def create_agent_executor(memory, conversation_id: str):
 
     # --- Tool Setup ---
     graph = Neo4jGraph(
-        url=settings.NEO4J_URI,
-        username=settings.NEO4J_USERNAME,
-        password=settings.NEO4J_PASSWORD
+        url="neo4j+ssc://ea98a3f7.databases.neo4j.io",
+        username="ea98a3f7",
+        password="BH_JCMJl4miigovZk9UUWd3AqPdm8fsrBAd-fgdV--c",
+        database="ea98a3f7"  # <-- This is what the bot was missing!
     )
     graph.refresh_schema()
 
@@ -90,7 +92,9 @@ def create_agent_executor(memory, conversation_id: str):
     )
 
     supabase: Client = create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_KEY)
-    embeddings = GoogleGenerativeAIEmbeddings(model=settings.EMBEDDING_MODEL)
+    embeddings = HuggingFaceEmbeddings(
+     model_name="sentence-transformers/all-mpnet-base-v2"
+    )
     
     def run_vector_search(query: str, k: int = 4) -> list[Document]:
         """Performs a similarity search on the Supabase vector store."""

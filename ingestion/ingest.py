@@ -1,5 +1,5 @@
 # /ingestion/ingest.py
-
+from langchain_huggingface import HuggingFaceEmbeddings
 import os
 import re
 import hashlib
@@ -21,8 +21,8 @@ from config.settings import settings
 load_dotenv()
 
 # --- PUT YOUR TWO API KEYS HERE! ---
-API_KEY_1 = "AIzaSyCW5rPy2mHhJWV6PoDmFHO7pJxaYCC7EqY" 
-API_KEY_2 = "AIzaSyCVhZO5XHqjU0B0ayHQMYu_jPDzi4e4cjw"
+API_KEY_1 = "AIzaSyCInlWbeaNKITpwd6rwSrlRoMXje9duwEU" 
+API_KEY_2 = "AIzaSyBO6kXYHB4sKpwKngNeZ8WBZyyexFpwGdE"
 # -----------------------------------
 
 def calculate_checksum(file_path):
@@ -71,9 +71,8 @@ def main():
     supabase: Client = create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_KEY)
 
     # Initialize Google's newest embedding model
-    embeddings = GoogleGenerativeAIEmbeddings(
-        model="models/text-embedding-004",
-        google_api_key=API_KEY_1
+    embeddings = HuggingFaceEmbeddings(
+     model_name="sentence-transformers/all-mpnet-base-v2"
     )
 
     print("\nStep 2: Checking for new, updated, or deleted files...")
