@@ -59,9 +59,9 @@ class ToolCallbackHandler(BaseCallbackHandler):
 def create_agent_executor(memory, conversation_id: str):
     """Builds and returns the complete AI agent executor."""
     logger.info("🚀 Creating new agent executor instance...")
-    if not settings.GOOGLE_API_KEY:
-         logger.error("GOOGLE_API_KEY not found in settings.")
-         raise ValueError("Google API Key is not configured.")
+    # if not settings.GOOGLE_API_KEY:
+    #      logger.error("GOOGLE_API_KEY not found in settings.")
+    #      raise ValueError("Google API Key is not configured.")
 
     # ======================TESTING=================================
     # llm = ChatGoogleGenerativeAI(
