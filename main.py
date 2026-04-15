@@ -2,6 +2,7 @@
 
 import uvicorn
 import os
+from config.settings import settings
 
 print("DEBUG - Supabase URL is:", settings.SUPABASE_URL)
 print("DEBUG - History Table is:", settings.DB_CONVERSATION_HISTORY_TABLE)
