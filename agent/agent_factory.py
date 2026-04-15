@@ -63,12 +63,22 @@ def create_agent_executor(memory, conversation_id: str):
          logger.error("GOOGLE_API_KEY not found in settings.")
          raise ValueError("Google API Key is not configured.")
 
-    llm = ChatGoogleGenerativeAI(
-        model=settings.GENERATIVE_MODEL,
-        temperature=settings.AGENT_TEMPERATURE,
-        google_api_key=settings.GOOGLE_API_KEY, # Explicitly pass the key
-        convert_system_message_to_human=True
+    # ======================TESTING=================================
+    # llm = ChatGoogleGenerativeAI(
+    #     model=settings.GENERATIVE_MODEL,
+    #     temperature=settings.AGENT_TEMPERATURE,
+    #     google_api_key=settings.GOOGLE_API_KEY, # Explicitly pass the key
+    #     convert_system_message_to_human=True
+    # )
+    # ======================TESTING=================================
+    
+    # --- OLLAMA CLOUD LLM (TESTING) ---
+    from langchain_community.chat_models import ChatOllama
+    llm = ChatOllama(
+        model="gpt-oss:20b-cloud", # The cloud model you just pulled
+        temperature=0.1
     )
+    # ----------------------------------
 
     # --- Tool Setup ---
     graph = Neo4jGraph(
