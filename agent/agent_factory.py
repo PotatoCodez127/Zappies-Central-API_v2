@@ -71,11 +71,15 @@ def create_agent_executor(memory, conversation_id: str):
     #     convert_system_message_to_human=True
     # )
     # ======================TESTING=================================
-    
+
     # --- OLLAMA CLOUD LLM (TESTING) ---
     from langchain_community.chat_models import ChatOllama
+    import os
+
     llm = ChatOllama(
-        model="gpt-oss:20b-cloud", # The cloud model you just pulled
+        model="gpt-oss:20b-cloud",           # The 20-billion parameter cloud model
+        base_url="https://ollama.com",       # Point to the cloud instead of localhost
+        headers={"Authorization": f"Bearer {os.environ.get('OLLAMA_API_KEY')}"}, # Secure Auth
         temperature=0.1
     )
     # ----------------------------------
