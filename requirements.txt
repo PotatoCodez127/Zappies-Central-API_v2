@@ -35,3 +35,9 @@ unstructured
 markdown
 langchain-huggingface
 sentence-transformers
+
+
+# --- Tests ---
+pytest
+pytest-mock
+httpx

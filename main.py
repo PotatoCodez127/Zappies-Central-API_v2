@@ -10,4 +10,4 @@ if __name__ == "__main__":
 
     # Run the Uvicorn server
     # It will look for the 'app' instance in the 'api.server' module
-    uvicorn.run("api.server:app", host="0.0.0.0", port=port, reload=False)
+    uvicorn.run("api.server:app", host="127.0.0.1", port=port, reload=False)
