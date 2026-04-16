@@ -49,7 +49,7 @@ class ToolCallbackHandler(BaseCallbackHandler):
                 args = tool_input
 
             self.tool_calls.append(
-                {
+                { 
                     "name": action.tool,
                     "args": args, # Use the processed 'args' dictionary
                     "id": str(uuid.uuid4())
